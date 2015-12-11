@@ -1,72 +1,11 @@
-# Imoji SDK UI
+# Fork reasoning
 
-A collection of powerful open source UI widgets leveraging the [Imoji SDK](https://github.com/imojiengineering/imoji-ios-sdk). 
+IMCollectionView was sometimes hanging the app with driving the CPU over 100% when keyboard was poping up and layout was changing. The problem was in the imoji rendering function, more specifically this batch of code:
 
-## Create
-
-Add the ability to create new Imoji Stickers with ease into your application! Simply launch IMCreateImojiViewController and allow the editor to do the work for you: 
-
-```objective-c
-IMImojiSession* session = [IMImojiSession imojiSession];
- 
-IMCreateImojiViewController* createViewController = [IMCreateImojiViewController controllerWithSourceImage:image session:session];
- 
-[parentViewController presentViewController:createViewController animated:YES completion:nil];
+```
+[self performBatchUpdates:^{
+    [self reloadItemsAtIndexPaths:@[newPath]];
+} completion:nil];
 ```
 
-![alt tag](https://s3.amazonaws.com/imoji-external/imoji-create-ios.gif)
-
-## Search
-
-Display a view controller to search Imoji's database of stickers. Specify a delegate to receive the selection of the Imoji
-
-```objective-c
-IMImojiSession* session = [IMImojiSession imojiSession];
- 
-IMCollectionViewController* collectionViewController = [IMCollectionViewController collectionViewControllerWithSession:session];
- 
-[parentViewController presentViewController:collectionViewController animated:YES completion:nil];
-```
-
-![alt tag](https://s3.amazonaws.com/imoji-external/imoji-search.gif)
-
-## Sentence Parsing
-
-Send complete sentences to the IMCollectionViewController and watch it find results for you in real time by matching keywords in your sentence. 
-
-```objective-c
-IMImojiSession* session = [IMImojiSession imojiSession];
- 
-IMCollectionViewController* collectionViewController = [IMCollectionViewController collectionViewControllerWithSession:session];
- 
-[parentViewController presentViewController:collectionViewController animated:YES completion:nil];
-```
-
-![alt tag](https://s3.amazonaws.com/imoji-external/imoji-sentence-parser.gif)
-
-
-## Categories
-
-Display **trending** or **reactions** to your users with the IMCollectionViewController as well:
-
-
-```objective-c
-IMImojiSession* session = [IMImojiSession imojiSession];
- 
-IMCollectionViewController *viewController = [IMCollectionViewController collectionViewControllerWithSession:session];
-viewController.searchField.hidden = YES;
-
-[parentViewController presentViewController:viewController animated:YES completion:^{
-     [viewController.collectionView loadImojiCategories:IMImojiSessionCategoryClassificationTrending];
-     [viewController updateViewConstraints];
-}];
-```
-
-![alt tag](https://s3.amazonaws.com/imoji-external/imoji-trending-ios.gif)
-
-
-## Samples 
-
-Check out the sample apps to get up to speed on the services!
-
-https://github.com/imojiengineering/imoji-ios-sdk-ui/tree/master/Examples
+We changed the batch updates code with performing actions on the cells themselves which seems to work just fine. As this is a hacky way of solving this problem which is probably a very isolated case pertaining just us, we will not issue a pull request. However we notified the Imoji team and as soon as they have fixed this properly, we can switch back to ther version.
