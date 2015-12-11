@@ -676,6 +676,11 @@ minimumInteritemSpacingForSectionAtIndex:(NSInteger)section {
     }
 }
 
+- (void)cancelLoadingOperation;
+{
+    [self.imojiOperation cancel];
+}
+
 #pragma mark Private Imoji Loading Methods
 
 - (void)loadImojisFromSearch:(NSString *)searchTerm offset:(NSNumber *)offset infiniteScrollEnabled:(BOOL)infiniteScrollEnabled {

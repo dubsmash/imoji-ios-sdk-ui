@@ -159,6 +159,11 @@ extern NSUInteger const IMCollectionViewNumberOfItemsToLoad;
  */
 - (void)displaySplashOfType:(IMCollectionViewSplashCellType)splashType;
 
+/**
+ * @abstract Cancels current loading operation
+ */
+- (void)cancelLoadingOperation;
+
 @end
 
 @interface IMCollectionView (Override)
