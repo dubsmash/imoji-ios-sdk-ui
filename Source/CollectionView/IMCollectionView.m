@@ -925,9 +925,15 @@ minimumInteritemSpacingForSectionAtIndex:(NSInteger)section {
     [self.session renderImoji:imoji
                       options:self.renderingOptions
                      callback:^(UIImage *image, NSError *renderError) {
-                         if (!operation.isCancelled) {
+                         
+                         NSIndexPath *newPath = [NSIndexPath indexPathForItem:(index + offset) inSection:section];
+                         BOOL visible = NO;
+                         for (NSIndexPath *visibleIndexPath in [self indexPathsForVisibleItems]) {
+                             visible |= [visibleIndexPath compare:newPath] == NSOrderedSame;
+                         }
+                         
+                         if (!operation.isCancelled && visible) {
                              self.images[section][index + offset] = image ? image : [NSNull null];
-                             NSIndexPath *newPath = [NSIndexPath indexPathForItem:(index + offset) inSection:section];
 
                              // immediately reload cells for iOS 8 and later, for iOS 7, we need to batch the updates
                              if (NSFoundationVersionNumber < NSFoundationVersionNumber_iOS_8_0) {
