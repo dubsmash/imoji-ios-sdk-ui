@@ -676,11 +676,6 @@ minimumInteritemSpacingForSectionAtIndex:(NSInteger)section {
     }
 }
 
-- (void)cancelLoadingOperation;
-{
-    [self.imojiOperation cancel];
-}
-
 #pragma mark Private Imoji Loading Methods
 
 - (void)loadImojisFromSearch:(NSString *)searchTerm offset:(NSNumber *)offset infiniteScrollEnabled:(BOOL)infiniteScrollEnabled {
@@ -925,14 +920,8 @@ minimumInteritemSpacingForSectionAtIndex:(NSInteger)section {
     [self.session renderImoji:imoji
                       options:self.renderingOptions
                      callback:^(UIImage *image, NSError *renderError) {
-                         
-                         NSIndexPath *newPath = [NSIndexPath indexPathForItem:(index + offset) inSection:section];
-                         BOOL visible = NO;
-                         for (NSIndexPath *visibleIndexPath in [self indexPathsForVisibleItems]) {
-                             visible |= [visibleIndexPath compare:newPath] == NSOrderedSame;
-                         }
-                         
-                         if (!operation.isCancelled && visible) {
+                         if (!operation.isCancelled) {
+                             NSIndexPath *newPath = [NSIndexPath indexPathForItem:(index + offset) inSection:section];
                              self.images[section][index + offset] = image ? image : [NSNull null];
 
                              // immediately reload cells for iOS 8 and later, for iOS 7, we need to batch the updates
@@ -947,9 +936,22 @@ minimumInteritemSpacingForSectionAtIndex:(NSInteger)section {
                                      [self reloadPendingUpdatesWithOperation:operation];
                                  }
                              } else {
-                                 [self performBatchUpdates:^{
-                                     [self reloadItemsAtIndexPaths:@[newPath]];
-                                 } completion:nil];
+                                 // Dubsmash's hacky way of doing things so that they kinda work
+                                 UICollectionViewCell *cell = [self cellForItemAtIndexPath:newPath];
+                                 if ([cell isKindOfClass:[IMCategoryCollectionViewCell class]]) {
+                                     id cellContent = self.content[(NSUInteger) newPath.section][@"imojis"][(NSUInteger) newPath.row];
+                                     if (![cellContent isKindOfClass:[NSNull class]]) {
+                                         id image = self.images[(NSUInteger) newPath.section][(NSUInteger) newPath.item];
+                                         if ([image isKindOfClass:[UIImage class]]) {
+                                             [(IMCategoryCollectionViewCell *)cell loadImojiCategory:((IMImojiCategoryObject *)cellContent).title imojiImojiImage:image];
+                                         }
+                                     }
+                                 } else if ([cell isKindOfClass:[IMCollectionViewCell class]]) {
+                                     id image = self.images[(NSUInteger) newPath.section][(NSUInteger) newPath.item];
+                                     if ([image isKindOfClass:[UIImage class]]) {
+                                         [(IMCollectionViewCell *)cell loadImojiImage:image];
+                                     }
+                                 }
                              }
                          }
                      }];
