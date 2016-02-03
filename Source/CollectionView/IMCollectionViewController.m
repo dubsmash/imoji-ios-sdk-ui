@@ -90,9 +90,9 @@ NSUInteger const IMCollectionViewControllerDefaultSearchDelayInMillis = 150;
     _backButton = (UIButton *) [self.topToolbar addToolbarButtonWithType:IMToolbarButtonBack].customView;
     _searchField = (UISearchBar *) [self.topToolbar addSearchBarItem].customView;
     _searchField.delegate = self;
-    _searchField.spellCheckingType = UITextSpellCheckingTypeNo;
     if ([_searchField respondsToSelector:@selector(setEnablesReturnKeyAutomatically:)]) {
         _searchField.enablesReturnKeyAutomatically = NO;
+        _searchField.spellCheckingType = UITextSpellCheckingTypeNo;
     }
     _bottomToolbar.delegate = _topToolbar.delegate = self;
 
@@ -126,7 +126,9 @@ NSUInteger const IMCollectionViewControllerDefaultSearchDelayInMillis = 150;
     NSMutableParagraphStyle *paragraphStyle = [NSMutableParagraphStyle new];
     paragraphStyle.alignment = NSTextAlignmentLeft;
 
-    self.searchField.returnKeyType = self.searchOnTextChanges ? UIReturnKeyDone : UIReturnKeySearch;
+    if ([self.searchField respondsToSelector:@selector(setReturnKeyType:)]) {
+        self.searchField.returnKeyType = self.searchOnTextChanges ? UIReturnKeyDone : UIReturnKeySearch;
+    }
     self.searchField.placeholder = [IMResourceBundleUtil localizedStringForKey:@"collectionViewControllerSearchStickers"];
 
     if ([self.collectionViewControllerDelegate respondsToSelector:@selector(backgroundColorForCollectionViewController:)]) {
@@ -228,7 +230,9 @@ NSUInteger const IMCollectionViewControllerDefaultSearchDelayInMillis = 150;
 
 - (void)setSearchOnTextChanges:(BOOL)searchOnTextChanges {
     _searchOnTextChanges = searchOnTextChanges;
-    self.searchField.returnKeyType = searchOnTextChanges ? UIReturnKeyDone : UIReturnKeySearch;
+    if ([self.searchField respondsToSelector:@selector(setReturnKeyType:)]) {
+        self.searchField.returnKeyType = searchOnTextChanges ? UIReturnKeyDone : UIReturnKeySearch;
+    }
 }
 
 - (void)setCollectionViewControllerDelegate:(id)collectionViewControllerDelegate {
