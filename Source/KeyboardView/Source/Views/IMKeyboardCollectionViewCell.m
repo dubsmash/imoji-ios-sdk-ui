@@ -24,10 +24,8 @@
 //
 
 #import <Masonry/Masonry.h>
+#import <YYImage/YYAnimatedImageView.h>
 #import "IMKeyboardCollectionViewCell.h"
-#import "IMCollectionView.h"
-#import "IMResourceBundleUtil.h"
-
 
 @implementation IMKeyboardCollectionViewCell {
 
@@ -36,7 +34,7 @@
 
 - (void)loadImojiImage:(UIImage *)imojiImage animated:(BOOL)animated {
     if (!self.imojiView) {
-        self.imojiView = [UIImageView new];
+        self.imojiView = [YYAnimatedImageView new];
 
         [self addSubview:self.imojiView];
         [self.imojiView mas_makeConstraints:^(MASConstraintMaker *make) {

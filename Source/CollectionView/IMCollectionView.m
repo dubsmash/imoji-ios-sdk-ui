@@ -24,19 +24,17 @@
 //
 
 #import <ImojiSDK/ImojiSDK.h>
+#import <Masonry/Masonry.h>
 #import "IMCollectionView.h"
 #import "IMCollectionViewCell.h"
 #import "IMCategoryCollectionViewCell.h"
 #import "IMCollectionViewStatusCell.h"
-#import "IMCollectionViewSplashCell.h"
 #import "IMResourceBundleUtil.h"
 #import "IMConnectivityUtil.h"
 #import "IMCollectionReusableAttributionView.h"
 #import "IMArtist.h"
 #import "IMCollectionReusableHeaderView.h"
 #import "IMCategoryAttribution.h"
-#import "IMImojiResultSetMetadata.h"
-#import "View+MASAdditions.h"
 #import "IMCollectionLoadingView.h"
 
 NSUInteger const IMCollectionViewNumberOfItemsToLoad = 60;
@@ -924,14 +922,17 @@ minimumInteritemSpacingForSectionAtIndex:(NSInteger)section {
                              NSIndexPath *newPath = [NSIndexPath indexPathForItem:(index + offset) inSection:section];
                              self.images[section][index + offset] = image ? image : [NSNull null];
 
+                             BOOL doReload = self.pendingCollectionViewUpdates.count == 0;
+                             [self.pendingCollectionViewUpdates addObject:newPath];
+
                              // immediately reload cells for iOS 8 and later, for iOS 7, we need to batch the updates
                              if (NSFoundationVersionNumber < NSFoundationVersionNumber_iOS_8_0) {
                                  BOOL doReload = self.pendingCollectionViewUpdates.count == 0;
                                  [self.pendingCollectionViewUpdates addObject:newPath];
-
+                                 
                                  // if the pending collection view list was empty, go ahead and call the reload method, otherwise, allow
                                  // the method to perform the reload after the last batch update completes
-
+                                 
                                  if (doReload) {
                                      [self reloadPendingUpdatesWithOperation:operation];
                                  }

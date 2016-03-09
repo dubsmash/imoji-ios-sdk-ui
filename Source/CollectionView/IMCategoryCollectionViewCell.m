@@ -25,7 +25,7 @@
 
 #import "IMCategoryCollectionViewCell.h"
 #import <Masonry/View+MASAdditions.h>
-#import <ImojiSDK/YYAnimatedImageView.h>
+#import <YYImage/YYAnimatedImageView.h>
 #import "IMResourceBundleUtil.h"
 #import "IMAttributeStringUtil.h"
 
@@ -88,6 +88,7 @@ NSString *const IMCategoryCollectionViewCellReuseId = @"IMCategoryCollectionView
         }
     } else {
         self.imojiView.image = [IMResourceBundleUtil loadingPlaceholderImageWithRadius:30];
+        self.imojiView.highlightedImage = self.imojiView.image;
         self.imojiView.contentMode = UIViewContentModeCenter;
 
         _hasImojiImage = NO;

@@ -24,11 +24,9 @@
 //
 
 #import <Masonry/Masonry.h>
+#import <YYImage/YYAnimatedImageView.h>
 #import "IMKeyboardCategoryCollectionViewCell.h"
 #import "IMAttributeStringUtil.h"
-#import "IMCollectionView.h"
-#import "IMResourceBundleUtil.h"
-
 
 @implementation IMKeyboardCategoryCollectionViewCell {
 
@@ -40,7 +38,7 @@
     int inBetweenPadding = 3;
 
     if (!self.imojiView) {
-        self.imojiView = [UIImageView new];
+        self.imojiView = [YYAnimatedImageView new];
 
         [self addSubview:self.imojiView];
         [self.imojiView mas_makeConstraints:^(MASConstraintMaker *make) {

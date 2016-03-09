@@ -79,7 +79,7 @@ public class IMCreateArtmojiView: UIView {
                 session.renderImoji(_selectedImojiView.imoji!,
                         options: IMImojiObjectRenderingOptions(renderSize: IMImojiObjectRenderSize.SizeThumbnail)) { image, error in
                     if error == nil {
-                        self.selectedImojiPreview.image = image
+                        self.selectedImojiPreview.image = UIImage(CGImage: image!.CGImage!, scale: UIScreen.mainScreen().scale, orientation: UIImageOrientation.Up)
                         self.updateFlipImageButtonForSelectedImoji()
                     }
                 }

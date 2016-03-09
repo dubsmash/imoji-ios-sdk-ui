@@ -205,19 +205,21 @@
 - (void)setBackgroundColor:(UIColor *)backgroundColor {
     [super setBackgroundColor:backgroundColor];
 
-    CGFloat r,g,b,a;
-    [backgroundColor getRed:&r
-                      green:&g
-                       blue:&b
-                      alpha:&a];
+    if (self.igEditor) {
+        CGFloat r, g, b, a;
+        [backgroundColor getRed:&r
+                          green:&g
+                           blue:&b
+                          alpha:&a];
 
-    igEditorSetBackgroundColor(
-            self.igEditor,
-            (IGint) (r * 255.f),
-            (IGint) (g * 255.f),
-            (IGint) (b * 255.f),
-            (IGint) (a * 255.f)
-    );
+        igEditorSetBackgroundColor(
+                self.igEditor,
+                (IGint) (r * 255.f),
+                (IGint) (g * 255.f),
+                (IGint) (b * 255.f),
+                (IGint) (a * 255.f)
+        );
+    }
 }
 
 - (UIImage *)outputImage {

@@ -130,6 +130,8 @@ NSString *const IMKeyboardViewDefaultFontFamily = @"Imoji-Regular";
     self.collectionView.clipsToBounds = YES;
     [self.collectionView setShowsHorizontalScrollIndicator:NO];
     self.collectionView.loadingView.backgroundColor = self.backgroundColor;
+    self.collectionView.renderingOptions = [IMImojiObjectRenderingOptions optionsWithRenderSize:IMImojiObjectRenderSizeThumbnail];
+    self.collectionView.renderingOptions.renderAnimatedIfSupported = YES;
 
     [self addSubview:self.collectionView];
 

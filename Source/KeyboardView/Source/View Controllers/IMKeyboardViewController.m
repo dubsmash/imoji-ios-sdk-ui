@@ -27,7 +27,6 @@
 #import "IMKeyboardViewController.h"
 #import "IMKeyboardCollectionView.h"
 #import "IMQwertyViewController.h"
-#import "IMConnectivityUtil.h"
 #import "IMToolbar.h"
 #import "IMKeyboardView.h"
 
@@ -198,24 +197,31 @@
 - (void)userDidSelectImoji:(IMImojiObject *)imoji fromCollectionView:(IMCollectionView *)collectionView {
     [self.keyboardView showDownloadingImojiIndicator];
 
-    IMImojiObjectRenderingOptions *renderOptions = [IMImojiObjectRenderingOptions optionsWithRenderSize:IMImojiObjectRenderSizeFullResolution];
-    renderOptions.aspectRatio = [NSValue valueWithCGSize:CGSizeMake(16.0f, 9.0f)];
-    renderOptions.maximumRenderSize = [NSValue valueWithCGSize:CGSizeMake(800.0f, 800.0f)];
+    IMImojiObjectRenderingOptions *renderOptions;
 
-    [self.session renderImoji:imoji
-                      options:renderOptions
-                     callback:^(UIImage *image, NSError *error) {
-                         if (error) {
-                             NSLog(@"Error: %@", error);
-                             [self.keyboardView showFinishedDownloadedWithMessage:@"UNABLE TO DOWNLOAD IMOJI"];
-                         } else {
-                             UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-                             pasteboard.persistent = YES;
-                             [pasteboard setImage:image];
+    if (imoji.supportsAnimation) {
+        renderOptions = [IMImojiObjectRenderingOptions optionsWithRenderSize:IMImojiObjectRenderSizeThumbnail];
+    } else {
+        renderOptions = [IMImojiObjectRenderingOptions optionsWithRenderSize:IMImojiObjectRenderSizeFullResolution];
+        renderOptions.aspectRatio = [NSValue valueWithCGSize:CGSizeMake(16.0f, 9.0f)];
+        renderOptions.maximumRenderSize = [NSValue valueWithCGSize:CGSizeMake(800.0f, 800.0f)];
+    }
+    renderOptions.renderAnimatedIfSupported = YES;
 
-                             [self.keyboardView showFinishedDownloadedWithMessage:@"COPIED TO CLIPBOARD"];
-                         }
-                     }];
+    [self.session renderImojiForExport:imoji
+                               options:renderOptions
+                              callback:^(UIImage *image, NSData *data, NSString *typeIdentifier, NSError *error) {
+                                  if (error || !data) {
+                                      NSLog(@"Error: %@", error);
+                                      [self.keyboardView showFinishedDownloadedWithMessage:@"UNABLE TO DOWNLOAD IMOJI"];
+                                  } else {
+                                      UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+                                      pasteboard.persistent = YES;
+                                      [pasteboard setData:data forPasteboardType:typeIdentifier];
+                                      [self.keyboardView showFinishedDownloadedWithMessage:@"COPIED TO CLIPBOARD"];
+                                  }
+
+                              }];
 
     // save to recents
     [self saveToRecents:imoji];
@@ -263,7 +269,7 @@
 }
 
 - (void)userDidSelectAttributionLink:(NSURL *)attributionLink fromCollectionView:(IMCollectionView *)collectionView {
-    UIResponder* responder = self;
+    UIResponder *responder = self;
     while ((responder = [responder nextResponder]) != nil) {
         if ([responder respondsToSelector:@selector(openURL:)]) {
             [responder performSelector:@selector(openURL:)
