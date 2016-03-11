@@ -918,7 +918,7 @@ minimumInteritemSpacingForSectionAtIndex:(NSInteger)section {
     [self.session renderImoji:imoji
                       options:self.renderingOptions
                      callback:^(UIImage *image, NSError *renderError) {
-                         if (!operation.isCancelled) {
+                         if (!operation.isCancelled && [self.images[section] count] > index + offset) {
                              NSIndexPath *newPath = [NSIndexPath indexPathForItem:(index + offset) inSection:section];
                              self.images[section][index + offset] = image ? image : [NSNull null];
 
